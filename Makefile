@@ -1,14 +1,23 @@
-test.out: test.o Benefector.o Nosy.o Account.o Bank.o
-	g++  test.o Account.o Benefector.o Nosy.o Bank.o -lpthread -o test.out
-test.o: test.cpp Benefector.h Bank.h Nosy.h
-	g++ -c test.cpp -o test.o
+LnkOpt		=	-Wall -O3
+CmpOpt		=	$(LnkOpt) -c
+FinalLnkOpt	=	-lpthread
+
+Test_01.out: Test_01.o Benefector.o Nosy.o Account.o Bank.o
+	g++  Test_01.o Account.o Benefector.o Nosy.o Bank.o $(FinalLnkOpt) -o Test_01.out
+Test_01.o: Test_01.cpp Benefector.h Bank.h Nosy.h
+	g++ $(CmpOpt) Test_01.cpp -o Test_01.o
+
 Bank.o: Bank.cpp Account.h Exception.h
-	g++ -c Bank.cpp -o Bank.o
+	g++ $(CmpOpt)  Bank.cpp -o Bank.o
+
 Benefector.o: Benefector.cpp Benefector.h Account.h
-	g++ -c Benefector.cpp -o Benefector.o
+	g++ $(CmpOpt) Benefector.cpp -o Benefector.o
+
 Nosy.o: Nosy.cpp Nosy.h Account.h
-	g++ -c Nosy.cpp -o Nosy.o
+	g++ $(CmpOpt) Nosy.cpp -o Nosy.o
+
 Account.o: Account.cpp Account.h Benefector.h Nosy.h 
-	g++ -c Account.cpp -o Account.o
-clean:
-	rm *.o test.out
+	g++ $(CmpOpt) Account.cpp -o Account.o
+
+Clean:
+	rm -rv *.o *.out & reset && reset 

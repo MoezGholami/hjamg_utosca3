@@ -1,7 +1,7 @@
 #ifndef __Moez_Hadis_NOSY
 #define __Moez_HAdis_NOSY
 
-class Account;
+#include "Account.h"
 
 class Nosy{
 	public:

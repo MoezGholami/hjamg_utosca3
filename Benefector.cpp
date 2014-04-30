@@ -10,6 +10,6 @@ void Benefector::help(Account* account)
 
 void Benefector::tryToHelp(Account* account)
 {
-	cerr<<"A benefector is trying to help "<<account->getName()<<endl;
+	cerr<<"In try2help: A benefector is trying to help "<<account->getName()<<endl;
 	account->wait4Charity(this);
 }

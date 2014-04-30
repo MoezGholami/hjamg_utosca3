@@ -1,5 +1,4 @@
 #include "Nosy.h"
-#include "Account.h"
 
 void Nosy::nosyWatch(Account* account)
 {

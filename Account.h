@@ -44,6 +44,7 @@ class Account
 		string PhoneNumber;
 
 		bool cancelling;
+		bool canBeCancelled;
 
 		queue<Nosy*> watchers;
 		queue<Benefector*> bens;
