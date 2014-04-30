@@ -1,20 +1,20 @@
 #ifndef __Moez_Hadis_Account
 #define __Moez_Hadis_Account
 
-#include "Nosy.h"
-#include "Benefector.h"
 #include <queue>
 #include <pthread.h>
 #include <iostream>
 #include <string>
 #include <stdio.h>
+#include <unistd.h>
 using namespace std;
 
 #define Lock(m)		while(pthread_mutex_trylock(&m))
 #define UnLock(m)	while(pthread_mutex_unlock(&m))
 
-extern ostream out;
-class AccountGenerator;
+class Bank;
+class Benefector;
+class Nosy;
 
 class Account
 {
@@ -24,14 +24,15 @@ class Account
 
 
 		inline int getID(void);
+		string getName(void);
 		inline bool isCancelling(void);
 		void oneAct(void);
 
 		// does not create log, will not block the caller, insert into the queues, these methodes are critical
-		inline void wait4Charity(Benefector*);
-		inline void wait4Watching(Nosy*);
+		void wait4Charity(Benefector*);
+		void wait4Watching(Nosy*);
 
-		friend class AccountGenerator;
+		friend class Bank;
 
 	private:
 		Account(const string &, const string &, int, pthread_t, pthread_mutex_t);

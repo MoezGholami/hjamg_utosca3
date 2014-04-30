@@ -5,13 +5,14 @@
 #include "Account.h"
 #include "Exception.h"
 
-class AccountGenerator
+class Bank
 {
 	public:
-		AccountGenerator(void);
-		Account newAccount(const string &name, const string &phoneNumber);
+		Bank(void);
+		~Bank(void);
+		Account* newAccount(const string &name, const string &phoneNumber);
 	private:
-		int idcounter;
+		vector <Account*> accs;
 };
 
 class AccountConstructEx

@@ -1,4 +1,6 @@
 #include "Account.h"
+#include "Nosy.h"
+#include "Benefector.h"
 
 Account::Account(const string &name, const string &phoneNumber, int id, pthread_t rt, pthread_mutex_t rm)
 {
@@ -25,12 +27,12 @@ Account::~Account(void)
 
 void Account::cancel(void)
 {
+	cerr<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
 	cancelling=true;
 	pthread_join(runningOn, 0);
 	pthread_cond_destroy(&wakeupCond);
 	pthread_mutex_destroy(&watchQmtx);
 	pthread_mutex_destroy(&bensQmtx);
-	out<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
 	UnLock(runningMutex);
 	pthread_mutex_destroy(&runningMutex);
 }
@@ -38,6 +40,11 @@ void Account::cancel(void)
 int Account::getID(void)
 {
 	return ID;
+}
+
+string Account::getName()
+{
+	return Name;
 }
 
 bool Account::isCancelling(void)
@@ -49,6 +56,7 @@ void Account::wait4Charity(Benefector* christ)
 {
 	Lock(bensQmtx);
 	bens.push(christ);
+	cerr<<"someone is trying to help me, i am "<<getName()<<endl;
 	pthread_cond_broadcast(&wakeupCond); //TODO: search if we are awake what will happern if another person wake us up?
 	UnLock(bensQmtx);
 }
@@ -63,6 +71,7 @@ void Account::wait4Watching(Nosy* n)
 
 void Account::oneAct(void)
 {
+	cerr<<"oneAct() has been executed.\n";
 	Lock(watchQmtx);
 	Lock(bensQmtx);
 
@@ -100,8 +109,20 @@ void Account::oneAct(void)
 
 void *RunAnAccount(void* acptr)
 {
+	 /*
+	string a = "";
+	for (int i = 0 ; i < 50000 ; i ++)
+		a+= "aaa";
+	// */
+	cerr<<"RunAnAccount() has been executed.\n";
 	Account *inUse=(Account *)acptr;
+	cerr<<"is cancelling "<<inUse->isCancelling()<<endl;
 	while(!inUse->isCancelling())
+	{
+		cerr<<"entering one act\n";
+		Account *inUse=(Account *)acptr;
 		inUse->oneAct();
+	}
+	cerr<<"has been joined"<<endl;
 	return 0;
 }
