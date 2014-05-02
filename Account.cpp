@@ -35,7 +35,7 @@ void Account::cancel(void)
 		usleep(100000);
 	cerr<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
 	cancelling=true;
-	pthread_join(runningOn, 0);
+	//pthread_join(runningOn, 0);
 	pthread_cond_destroy(&wakeupCond);
 	pthread_mutex_destroy(&watchQmtx);
 	pthread_mutex_destroy(&bensQmtx);

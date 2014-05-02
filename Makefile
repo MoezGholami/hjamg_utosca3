@@ -13,7 +13,7 @@ Bank.o: Bank.cpp Account.h Exception.h
 Benefector.o: Benefector.cpp Benefector.h Account.h
 	g++ $(CmpOpt) Benefector.cpp -o Benefector.o
 
-Nosy.o: Nosy.cpp Nosy.h Bank.h Account.h
+Nosy.o: Nosy.cpp Nosy.h Account.h Exception.h Bank.h
 	g++ $(CmpOpt) Nosy.cpp -o Nosy.o
 
 Account.o: Account.cpp Account.h Benefector.h Nosy.h 

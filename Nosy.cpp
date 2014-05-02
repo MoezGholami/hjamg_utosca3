@@ -12,12 +12,12 @@ Nosy::Nosy(int i, string n, Bank* b, pthread_t rn, vector <int> ids)
 	file.open(filename.c_str());
 	file.close();
 	runningNosy = rn;
-//	watchAccs = bank->getAccountsByIDs(ids);
+	watchAccs = nosyBank->getAccountsByIDs(ids);
 }
 
 Nosy::~Nosy()
 {
-//	pthread_join(runningNosy,0);
+	pthread_join(runningNosy,0);
 }
 
 void Nosy::nosyWatch(Account* account)
@@ -56,10 +56,10 @@ int NosyConstructEx::code(void)
 
 void* RunNosy(void* acptr)
 {
-//	Nosy* nosy = (Nosy*) acptr;
+	Nosy* nosy = (Nosy*) acptr;
 	//TODO is cacelling
-//	for (unsigned i = 0 ; i < nosy->watchAccs.size() ; i++)
-//		nosy->watchAccs[i]->wait4Watching(nosy);
+	for (unsigned i = 0 ; i < nosy->watchAccs.size() ; i++)
+		nosy->watchAccs[i]->wait4Watching(nosy);
 			
 	return 0;
 }

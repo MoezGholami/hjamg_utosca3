@@ -2,7 +2,7 @@
 #define __Moez_HAdis_NOSY
 
 #include <vector>
-#include "pthread.h"
+#include <pthread.h>
 #include "Account.h"
 #include "Exception.h"
 #include "Bank.h"
@@ -12,7 +12,7 @@ class Nosy
 	public:
 		friend class NosyGenerator;
 		void nosyWatch(Account* account);
-		//vector <Account*> watchAccs;
+		vector <Account*> watchAccs;
 		void destruct(void);
 		~Nosy(void);
 	private:
@@ -26,13 +26,13 @@ class Nosy
 class NosyGenerator
 {
 	public:
-		NosyGenerator (Bank*);
+		NosyGenerator(Bank*);
 		Nosy* newNosy(string, vector <int>);
 
 		void Close(void);
 	private:
 		int idgen;
-		Bank* bank; 
+		Bank* bank;
 };
 
 class NosyConstructEx
