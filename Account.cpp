@@ -11,9 +11,11 @@ Account::Account(const string &name, const string &phoneNumber, int id, pthread_
 	pthread_mutex_init(&runningMutex, 0);
 	pthread_mutex_init(&bensQmtx, 0);
 	pthread_mutex_init(&watchQmtx, 0);
+	pthread_mutex_init(&valMtx, 0);
 	pthread_cond_init(&wakeupCond,0);
 	cancelling=false;
 	canBeCancelled=true;
+	destructorCalled=false;
 	Lock(runningMutex);
 	qcounter=0;
 	val=0;
@@ -28,6 +30,7 @@ Account::~Account(void)
 
 void Account::cancel(void)
 {
+	destructorCalled=true;
 	while(!canBeCancelled)
 		usleep(100000);
 	cerr<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
@@ -36,6 +39,7 @@ void Account::cancel(void)
 	pthread_cond_destroy(&wakeupCond);
 	pthread_mutex_destroy(&watchQmtx);
 	pthread_mutex_destroy(&bensQmtx);
+	pthread_mutex_destroy(&valMtx);
 	UnLock(runningMutex);
 	pthread_mutex_destroy(&runningMutex);
 }
@@ -55,21 +59,34 @@ bool Account::isCancelling(void)
 	return cancelling;
 }
 
+int Account::IncAndReturn(int plus)
+{
+	Lock(valMtx);
+	val+=plus;
+	int v=val;
+	UnLock(valMtx);
+	return v;
+}
+
 void Account::wait4Charity(Benefector* christ)
 {
+	if(destructorCalled)
+		return ;
+	canBeCancelled=false;
 	Lock(bensQmtx);
 	bens.push(christ);
 	cerr<<"in wait4charity, in benefector's thread: someone is trying to help me, i am "<<getName()<<endl;
-	canBeCancelled=false;
 	pthread_cond_broadcast(&wakeupCond); //TODO: search if we are awake what will happern if another person wake us up?
 	UnLock(bensQmtx);
 }
 
 void Account::wait4Watching(Nosy* n)
 {
+	if(destructorCalled)
+		return ;
+	canBeCancelled=false;
 	Lock(watchQmtx);
 	watchers.push(n);
-	canBeCancelled=false;
 	pthread_cond_broadcast(&wakeupCond);
 	UnLock(watchQmtx);
 }
@@ -100,18 +117,13 @@ void Account::oneAct(void)
 			bens.pop();
 		}
 	}
+	UnLock(watchQmtx);
+	UnLock(bensQmtx);
 	if(bens.size()==0 && watchers.size()==0)
 	{
-		UnLock(watchQmtx);
-		UnLock(bensQmtx);
-		canBeCancelled=true;
+		canBeCancelled=destructorCalled;
 		cerr<<"sleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
-	}
-	else
-	{
-		UnLock(watchQmtx);
-		UnLock(bensQmtx);
 	}
 }
 

@@ -23,16 +23,19 @@ class Account
 		void cancel(void);
 
 
-		inline int getID(void);
+		int getID(void);
 		string getName(void);
 		inline bool isCancelling(void);
 		void oneAct(void);
 
-		// does not create log, will not block the caller, insert into the queues, these methodes are critical
 		void wait4Charity(Benefector*);
 		void wait4Watching(Nosy*);
 
+		int IncAndReturn(int plus);
+
 		friend class Bank;
+
+		pthread_mutex_t valMtx;
 
 	private:
 		Account(const string &, const string &, int, pthread_t, pthread_mutex_t);
@@ -45,6 +48,7 @@ class Account
 
 		bool cancelling;
 		bool canBeCancelled;
+		bool destructorCalled;
 
 		queue<Nosy*> watchers;
 		queue<Benefector*> bens;

@@ -2,6 +2,7 @@
 #define __Moez_Hadis_Bank
 
 #include <vector>
+#include <map>
 #include "Account.h"
 #include "Exception.h"
 
@@ -11,8 +12,10 @@ class Bank
 		Bank(void);
 		~Bank(void);
 		Account* newAccount(const string &name, const string &phoneNumber);
+		vector<Account*> getAccountsByIDs(const vector<int>& IDs);
 	private:
 		vector <Account*> accs;
+		map<int, Account*> idAccsMap;
 };
 
 class AccountConstructEx
