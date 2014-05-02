@@ -39,5 +39,5 @@ int AccountConstructEx::code(void)
 
 const char* AccountConstructEx::Declaration(void)
 {
-	return "An error occured while creating a new account";
+	return "An error occured while creating a new account.\n";
 }
