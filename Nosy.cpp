@@ -44,12 +44,12 @@ Nosy* NosyGenerator::newNosy(string n, vector<int> ids)
 	return nosy;
 }
 
-const char* NosyConstructEx::Declaration(void)
+const char* NosyConstructEx::Declaration(void) const
 {
 	return "An error occured while creating a new nosy.\n";
 }
 
-int NosyConstructEx::code(void)
+int NosyConstructEx::code(void) const
 {
 	return 2;
 }	

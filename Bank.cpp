@@ -44,12 +44,12 @@ Account* Bank::getAccountByID(int id)
 	return idAccsMap[id];
 }
 
-int AccountConstructEx::code(void)
+int AccountConstructEx::code(void) const
 {
 	return 1;
 }
 
-const char* AccountConstructEx::Declaration(void)
+const char* AccountConstructEx::Declaration(void) const
 {
 	return "An error occured while creating a new account";
 }

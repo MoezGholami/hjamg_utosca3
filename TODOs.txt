@@ -1,2 +1,4 @@
-1:	concentrate on terminating an account;
-2:	check waking up an awake thread;
+3:	Handle 3 exceptions
+4:	review cancelling hadis's classes
+5:	edit the makefile
+6:	configure logs

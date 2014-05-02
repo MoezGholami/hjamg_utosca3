@@ -36,6 +36,7 @@ class Account
 		friend class Bank;
 
 		pthread_mutex_t valMtx;
+		void SetThreadFinished(void);
 
 	private:
 		Account(const string &, const string &, int, pthread_t, pthread_mutex_t);
@@ -49,6 +50,7 @@ class Account
 		bool cancelling;
 		bool canBeCancelled;
 		bool destructorCalled;
+		bool finished;
 
 		queue<Nosy*> watchers;
 		queue<Benefector*> bens;

@@ -26,7 +26,14 @@ void AddAccount(istream &in, Bank &bank)
 	string name, number;
 	if(!(in>>name>>number))
 		return ;
-	bank.newAccount(name, number);
+	try
+	{
+		bank.newAccount(name, number);
+	}
+	catch(const Exception &e)
+	{
+		cerr<<"An exception with Code "<<e.Code()<<" has been caught:\n"<<e.Declaration()<<endl;
+	}
 }
 
 void AddValToAccount(istream &in, Bank &bank)
@@ -61,7 +68,15 @@ void AddAgenet(istream &in, vector<Nosy*> &Agents, NosyGenerator &NosyGen)
 		return ;
 	while(in>>tid)
 		accIDs.push_back(tid);
-	Nosy *created=NosyGen.newNosy(agname, accIDs);
+	Nosy *created;
+	try
+	{
+		created=NosyGen.newNosy(agname, accIDs);
+	}
+	catch(const Exception &e)
+	{
+		cerr<<"An exception with Code "<<e.Code()<<" has been caught:\n"<<e.Declaration()<<endl;
+	}
 	Agents.push_back(created);
 }
 
@@ -74,7 +89,15 @@ void AddBenefector(istream &in, vector<Benefector*> &GoodMen, BenefectorGenerato
 		return ;
 	while(in>>tid)
 		accIDs.push_back(tid);
-	Benefector *created=BenGen.newBenefector(gname, accIDs);
+	Benefector *created;
+	try
+	{
+		created=BenGen.newBenefector(gname, accIDs);
+	}
+	catch(const Exception &e)
+	{
+		cerr<<"An exception with Code "<<e.Code()<<" has been caught:\n"<<e.Declaration()<<endl;
+	}
 	GoodMen.push_back(created);
 }
 

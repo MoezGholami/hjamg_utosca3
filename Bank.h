@@ -25,8 +25,8 @@ class AccountConstructEx
 	: public Exception
 {
 	public:
-		int code(void);
-		const char *Declaration(void);
+		int code(void) const;
+		const char *Declaration(void) const;
 };
 
 #endif

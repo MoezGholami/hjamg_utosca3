@@ -4,8 +4,8 @@
 class Exception
 {
 	public:
-		virtual int code(void)=0;
-		virtual const char *Declaration(void)=0;
+		virtual int code(void) const=0;
+		virtual const char *Declaration(void) const=0;
 };
 
 #endif

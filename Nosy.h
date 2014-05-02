@@ -39,8 +39,8 @@ class NosyConstructEx
 	: public Exception
 {
 	public:
-		int code(void);
-		const char *Declaration(void);
+		int code(void) const;
+		const char *Declaration(void) const;
 };
 
 void* RunNosy(void* n);

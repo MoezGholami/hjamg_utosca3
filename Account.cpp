@@ -16,6 +16,7 @@ Account::Account(const string &name, const string &phoneNumber, int id, pthread_
 	cancelling=false;
 	canBeCancelled=true;
 	destructorCalled=false;
+	finished=false;
 	Lock(runningMutex);
 	qcounter=0;
 	val=0;
@@ -30,17 +31,22 @@ Account::~Account(void)
 
 void Account::cancel(void)
 {
+	if(finished)
+		return ;
 	destructorCalled=true;
 	while(!canBeCancelled)
-		usleep(100000);
+		usleep(10000);
 	cerr<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
 	cancelling=true;
+	pthread_cond_broadcast(&wakeupCond);
+	if(!finished)
+		usleep(10000);
 	//pthread_join(runningOn, 0);
+	UnLock(runningMutex);
 	pthread_cond_destroy(&wakeupCond);
 	pthread_mutex_destroy(&watchQmtx);
 	pthread_mutex_destroy(&bensQmtx);
 	pthread_mutex_destroy(&valMtx);
-	UnLock(runningMutex);
 	pthread_mutex_destroy(&runningMutex);
 }
 
@@ -76,7 +82,7 @@ void Account::wait4Charity(Benefector* christ)
 	Lock(bensQmtx);
 	bens.push(christ);
 	cerr<<"in wait4charity, in benefector's thread: someone is trying to help me, i am "<<getName()<<endl;
-	pthread_cond_broadcast(&wakeupCond); //TODO: search if we are awake what will happern if another person wake us up?
+	pthread_cond_broadcast(&wakeupCond);
 	UnLock(bensQmtx);
 }
 
@@ -89,6 +95,11 @@ void Account::wait4Watching(Nosy* n)
 	watchers.push(n);
 	pthread_cond_broadcast(&wakeupCond);
 	UnLock(watchQmtx);
+}
+
+void Account::SetThreadFinished(void)
+{
+	finished=true;
 }
 
 void Account::oneAct(void)
@@ -122,7 +133,6 @@ void Account::oneAct(void)
 		UnLock(watchQmtx);
 		UnLock(bensQmtx);
 		canBeCancelled=destructorCalled;
-		cerr<<"sleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
 	}
 	else
@@ -144,5 +154,6 @@ void *RunAnAccount(void* acptr)
 		inUse->oneAct();
 	}
 	cerr<<"has been joined"<<endl;
+	inUse->SetThreadFinished();
 	return 0;
 }
