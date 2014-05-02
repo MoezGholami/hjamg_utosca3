@@ -6,7 +6,7 @@ Nosy::Nosy(int i, string n, Bank* b, pthread_t rn, vector <int> ids)
 {
 	id = i;
 	name = n;
-	bank = b;
+	nosyBank = b;
 	ofstream file;
 	string filename = name + ".txt";
 	file.open(filename.c_str());
@@ -29,10 +29,16 @@ void Nosy::nosyWatch(Account* account)
 	file.close();
 }
 
-Nosy* NosyGenerator::newNosy(int i, string n, Bank* bank, vector<int> ids)
+NosyGenerator::NosyGenerator(Bank* b)
+{
+	idgen = 0;
+	bank = b;
+}
+
+Nosy* NosyGenerator::newNosy(string n, vector<int> ids)
 {
 	pthread_t rn;
-	Nosy* nosy = new Nosy(i, n, bank, rn, ids);
+	Nosy* nosy = new Nosy(++idgen, n, bank, rn, ids);
 	if (pthread_create(&rn, 0, RunNosy, (void*)nosy))
 		throw NosyConstructEx();
 	return nosy;

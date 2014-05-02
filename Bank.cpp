@@ -4,7 +4,12 @@ Bank::Bank(void)
 {
 }
 
-Bank::~Bank()
+Bank::~Bank(void)
+{
+	Close();
+}
+
+void Bank::Close(void)
 {
 	for (unsigned i = 0 ; i < accs.size() ; i++)
 		delete (accs[i]);
@@ -32,6 +37,13 @@ vector<Account*> Bank::getAccountsByIDs(const vector<int>& IDs)
 	return result;
 }
 
+Account* Bank::getAccountByID(int id)
+{
+	if(idAccsMap.find(id)==idAccsMap.end())
+		return 0;
+	return idAccsMap[id];
+}
+
 int AccountConstructEx::code(void)
 {
 	return 1;
@@ -39,5 +51,5 @@ int AccountConstructEx::code(void)
 
 const char* AccountConstructEx::Declaration(void)
 {
-	return "An error occured while creating a new account.\n";
+	return "An error occured while creating a new account";
 }

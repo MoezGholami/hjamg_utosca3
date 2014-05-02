@@ -1,0 +1,2 @@
+1:	concentrate on terminating an account;
+2:	check waking up an awake thread;

@@ -1,5 +1,4 @@
 #include "Benefector.h"
-#include "Account.h"
 
 void Benefector::help(Account* account)
 {

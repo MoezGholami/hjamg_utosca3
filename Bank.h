@@ -11,8 +11,11 @@ class Bank
 	public:
 		Bank(void);
 		~Bank(void);
+		void Close(void);
+
 		Account* newAccount(const string &name, const string &phoneNumber);
 		vector<Account*> getAccountsByIDs(const vector<int>& IDs);
+		Account* getAccountByID(int id);
 	private:
 		vector <Account*> accs;
 		map<int, Account*> idAccsMap;

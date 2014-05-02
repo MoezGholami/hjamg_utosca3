@@ -117,13 +117,18 @@ void Account::oneAct(void)
 			bens.pop();
 		}
 	}
-	UnLock(watchQmtx);
-	UnLock(bensQmtx);
 	if(bens.size()==0 && watchers.size()==0)
 	{
+		UnLock(watchQmtx);
+		UnLock(bensQmtx);
 		canBeCancelled=destructorCalled;
 		cerr<<"sleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
+	}
+	else
+	{
+		UnLock(watchQmtx);
+		UnLock(bensQmtx);
 	}
 }
 

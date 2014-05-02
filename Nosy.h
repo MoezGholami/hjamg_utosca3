@@ -13,20 +13,26 @@ class Nosy
 		friend class NosyGenerator;
 		void nosyWatch(Account* account);
 		//vector <Account*> watchAccs;
-		~Nosy();
+		void destruct(void);
+		~Nosy(void);
 	private:
 		int id;
 		string name;
 		Nosy(int, string, Bank*,pthread_t, vector <int>);
-		Bank* bank;
+		Bank* nosyBank;
 		pthread_t runningNosy;
 };
 
 class NosyGenerator
 {
 	public:
-		Nosy* newNosy(int, string, Bank*, vector <int>);
+		NosyGenerator (Bank*);
+		Nosy* newNosy(string, vector <int>);
+
+		void Close(void);
 	private:
+		int idgen;
+		Bank* bank; 
 };
 
 class NosyConstructEx
