@@ -13,11 +13,19 @@ Nosy::Nosy(int i, string n, Bank* b, pthread_t rn, vector <int> ids)
 	file.close();
 	runningNosy = rn;
 	watchAccs = nosyBank->getAccountsByIDs(ids);
+	alreadyDestructed = false;
+}
+
+void Nosy::destruct(void)
+{
+	if(alreadyDestructed)
+		return;
+	alreadyDestructed = true;
 }
 
 Nosy::~Nosy()
 {
-	pthread_join(runningNosy,0);
+	destruct();
 }
 
 void Nosy::nosyWatch(Account* account)

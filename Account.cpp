@@ -133,6 +133,7 @@ void Account::oneAct(void)
 		UnLock(watchQmtx);
 		UnLock(bensQmtx);
 		canBeCancelled=destructorCalled;
+		cerr<<"sleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
 	}
 	else
