@@ -13,15 +13,12 @@ int main()
 	ids.push_back(1);
 
 	Bank bank;
-	BenefectorGenerator ben(&bank);
+	BenefectorGenerator benefectors(&bank);
+	NosyGenerator nosies(&bank);
 
-	Account* a = bank.newAccount("ali","123456");
-	Benefector* b = ben.newBenefector("billgates",ids);
-
-	/*	
-	Benefector* newBenefector(string name, const vector<int>& AccIDs);
-	Account* aliAccount = bank.newAccount("ali", "123456");
-	Benefector billgates;
-	billgates.tryToHelp(aliAccount);
-	 */
+	bank.newAccount("ali","123456");
+	benefectors.generateNewBenefector("billgates",ids);
+//	benefectors.generateNewBenefector("dianna",ids);
+//	nosies.generateNewNosy("fozul1",ids);
+//	nosies.generateNewNosy("fozul2",ids);
 }

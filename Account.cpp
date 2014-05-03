@@ -1,6 +1,8 @@
 #include "Account.h"
 #include "Nosy.h"
 #include "Benefector.h"
+#include <sstream>
+#include <string>
 
 Account::Account(const string &name, const string &phoneNumber, int id, pthread_t rt, pthread_mutex_t rm)
 {
@@ -36,7 +38,9 @@ void Account::cancel(void)
 	destructorCalled=true;
 	while(!canBeCancelled)
 		usleep(10000);
-	cerr<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
+	stringstream ss;
+	ss<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
+	cerr<<ss.str();
 	cancelling=true;
 	pthread_cond_broadcast(&wakeupCond);
 	if(!finished)
@@ -79,9 +83,15 @@ void Account::wait4Charity(Benefector* christ)
 	if(destructorCalled)
 		return ;
 	canBeCancelled=false;
+
 	Lock(bensQmtx);
 	bens.push(christ);
-	cerr<<"in wait4charity, in benefector's thread: someone is trying to help me, i am "<<getName()<<endl;
+
+	cerr<<"wait4charity has been called and gone inside\n";
+	stringstream ss;
+	ss<<"in wait4charity, in benefector's thread: someone is trying to help me, i am "<<getName()<<endl;
+	cerr<<ss.str();
+
 	pthread_cond_broadcast(&wakeupCond);
 	UnLock(bensQmtx);
 }
@@ -93,8 +103,15 @@ void Account::wait4Watching(Nosy* n)
 	canBeCancelled=false;
 	Lock(watchQmtx);
 	watchers.push(n);
+
+	stringstream ss;
+	ss<<"in wait4Watching, in nosy's thread: someone is watching me, i am "<<getName()<<endl;
+	cerr<<ss.str();
+
 	pthread_cond_broadcast(&wakeupCond);
 	UnLock(watchQmtx);
+
+	cerr<<"Unlocked watchQMtx\n";
 }
 
 void Account::SetThreadFinished(void)
@@ -106,10 +123,27 @@ void Account::oneAct(void)
 {
 	Lock(watchQmtx);
 	Lock(bensQmtx);
-	cerr<<"oneAct() has been executed.\n";
-	cerr<<"benQsize= "<<bens.size()<<endl;
+
+	stringstream ss;
+	ss<<"oneAct() has been executed.\n";
+	ss<<"benQsize = "<<bens.size()<<endl;
+	ss<<"watchQsize = "<<watchers.size()<<endl;
+	cerr<<ss.str();
 
 	qcounter=(qcounter+1)%6;
+
+	ss<<"qcounter: "<<qcounter<<endl;
+	cerr<<ss.str();
+
+	if(bens.size()==0 && watchers.size()==0)
+	{
+		UnLock(watchQmtx);
+		UnLock(bensQmtx);
+		canBeCancelled=destructorCalled;
+		cerr<<"sleeping thread because Qs are empty\n";
+		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
+	}
+
 	if(qcounter>0 && watchers.size()>0)	//access for a nosy
 	{
 		Nosy *n=watchers.front();
@@ -147,7 +181,11 @@ void *RunAnAccount(void* acptr)
 {
 	cerr<<"RunAnAccount() has been executed.\n";
 	Account *inUse=(Account *)acptr;
-	cerr<<"is cancelling "<<inUse->isCancelling()<<endl;
+
+	stringstream ss;
+	ss<<"is cancelling "<<inUse->isCancelling()<<endl;
+	cerr<<ss.str();
+
 	while(!inUse->isCancelling())
 	{
 		cerr<<"entering one act\n";

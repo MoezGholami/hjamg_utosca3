@@ -6,40 +6,62 @@
 #include "Account.h"
 #include "Exception.h"
 #include "Bank.h"
+#include <fstream>
+#include "Threading.h"
+using namespace std;
 
 class Nosy
 {
 	public:
 		friend class NosyGenerator;
-		void nosyWatch(Account* account);
+
 		vector <Account*> watchAccs;
+
+		void nosyWatch(Account* account);
 		void destruct(void);
 		~Nosy(void);
+
+		bool isCancelling(void);
+		void SetThreadFinished(void);
+
 	private:
+		Nosy(int, string, Bank*,pthread_t, const vector <int>&);
+
 		int id;
 		string name;
-		Nosy(int, string, Bank*,pthread_t, vector <int>);
 		Bank* nosyBank;
+
+		ofstream out;
+
 		pthread_t runningNosy;
+		pthread_mutex_t watchMtx;
+
+		bool alreadyDestructed;
+		bool cancelling;
+		bool canBeCancelled;
+		bool finished;
 };
 
 class NosyGenerator
 {
 	public:
 		NosyGenerator(Bank*);
-		Nosy* newNosy(string, vector <int>);
+		~NosyGenerator(void);
+		void generateNewNosy(string, const vector <int>&);
 
 		void Close(void);
 	private:
 		int idgen;
 		Bank* bank;
+		bool alreadyClosed;
+		vector<Nosy*> agents;
 };
 
 class NosyConstructEx
 	: public Exception
 {
 	public:
-		int code(void) const;
+		int Code(void) const;
 		const char *Declaration(void) const;
 };
 

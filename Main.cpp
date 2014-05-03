@@ -11,8 +11,6 @@ int main(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
 	Bank BankMelli;
-	vector<Nosy*> Agents;
-	vector<Benefector*> GoodMen;
 	NosyGenerator NosyGen(&BankMelli);
 	BenefectorGenerator BenGen(&BankMelli);
 	string Command="";
@@ -20,13 +18,11 @@ int main(int argc, char *argv[])
 	do
 	{
 		getline(cin, Command);
-		DoCommand(Command, BankMelli, Agents, GoodMen, NosyGen, BenGen);
+		DoCommand(Command, BankMelli, NosyGen, BenGen);
 	}while(Command!=Command_Exit);
 
-	for(unsigned i=0; i<Agents.size(); ++i)
-		(Agents[i])->destruct();
-	for(unsigned i=0; i<GoodMen.size(); ++i)
-		(GoodMen[i])->destruct();
+	NosyGen.Close();
+	BenGen.Close();
 	BankMelli.Close();
 	return 0;
 }

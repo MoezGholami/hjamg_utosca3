@@ -19,13 +19,15 @@ class Bank
 	private:
 		vector <Account*> accs;
 		map<int, Account*> idAccsMap;
+
+		bool alreadyClosed;
 };
 
 class AccountConstructEx
 	: public Exception
 {
 	public:
-		int code(void) const;
+		int Code(void) const;
 		const char *Declaration(void) const;
 };
 

@@ -2,6 +2,7 @@
 
 Bank::Bank(void)
 {
+	alreadyClosed=false;
 }
 
 Bank::~Bank(void)
@@ -11,6 +12,9 @@ Bank::~Bank(void)
 
 void Bank::Close(void)
 {
+	if(alreadyClosed)
+		return ;
+	alreadyClosed=true;
 	for (unsigned i = 0 ; i < accs.size() ; i++)
 		delete (accs[i]);
 }
@@ -44,7 +48,7 @@ Account* Bank::getAccountByID(int id)
 	return idAccsMap[id];
 }
 
-int AccountConstructEx::code(void) const
+int AccountConstructEx::Code(void) const
 {
 	return 1;
 }

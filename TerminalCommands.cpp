@@ -1,8 +1,7 @@
 #include "TerminalCommands.h"
 #include "Nosy.h"
 
-void DoCommand(const string &query, Bank &bank, vector<Nosy*>& Agents, vector<Benefector*>&GoodMen,
-		NosyGenerator &NosyGen, BenefectorGenerator &BenGen)
+void DoCommand(const string &query, Bank &bank, NosyGenerator &NosyGen, BenefectorGenerator &BenGen)
 {
 	if(isStringBlank(query))
 		return ;
@@ -16,9 +15,9 @@ void DoCommand(const string &query, Bank &bank, vector<Nosy*>& Agents, vector<Be
 	else if(type==Command_CheckVal)
 		CheckValue(iss, bank);
 	else if(type==Command_AddAgent)
-		AddAgenet(iss, Agents, NosyGen);
+		AddAgenet(iss, NosyGen);
 	else if(type==Command_AddBenefector);
-		AddBenefector(iss, GoodMen, BenGen);
+		AddBenefector(iss, BenGen);
 }
 
 void AddAccount(istream &in, Bank &bank)
@@ -59,7 +58,7 @@ void CheckValue(istream &in, Bank &bank)
 	cerr<<"the value of account with ID "<<id<<" is =\t"<<val<<endl;
 }
 
-void AddAgenet(istream &in, vector<Nosy*> &Agents, NosyGenerator &NosyGen)
+void AddAgenet(istream &in, NosyGenerator &NosyGen)
 {
 	string agname;
 	int tid;
@@ -68,19 +67,17 @@ void AddAgenet(istream &in, vector<Nosy*> &Agents, NosyGenerator &NosyGen)
 		return ;
 	while(in>>tid)
 		accIDs.push_back(tid);
-	Nosy *created;
 	try
 	{
-		created=NosyGen.newNosy(agname, accIDs);
+		NosyGen.generateNewNosy(agname, accIDs);
 	}
 	catch(const Exception &e)
 	{
 		cerr<<"An exception with Code "<<e.Code()<<" has been caught:\n"<<e.Declaration()<<endl;
 	}
-	Agents.push_back(created);
 }
 
-void AddBenefector(istream &in, vector<Benefector*> &GoodMen, BenefectorGenerator &BenGen)
+void AddBenefector(istream &in, BenefectorGenerator &BenGen)
 {
 	string gname;
 	int tid;
@@ -89,16 +86,14 @@ void AddBenefector(istream &in, vector<Benefector*> &GoodMen, BenefectorGenerato
 		return ;
 	while(in>>tid)
 		accIDs.push_back(tid);
-	Benefector *created;
 	try
 	{
-		created=BenGen.newBenefector(gname, accIDs);
+		BenGen.generateNewBenefector(gname, accIDs);
 	}
 	catch(const Exception &e)
 	{
 		cerr<<"An exception with Code "<<e.Code()<<" has been caught:\n"<<e.Declaration()<<endl;
 	}
-	GoodMen.push_back(created);
 }
 
 bool isStringBlank(const string &s)

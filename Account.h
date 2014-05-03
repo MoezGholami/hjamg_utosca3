@@ -2,15 +2,10 @@
 #define __Moez_Hadis_Account
 
 #include <queue>
-#include <pthread.h>
 #include <iostream>
 #include <string>
-#include <stdio.h>
-#include <unistd.h>
+#include "Threading.h"
 using namespace std;
-
-#define Lock(m)		while(pthread_mutex_trylock(&m))
-#define UnLock(m)	while(pthread_mutex_unlock(&m))
 
 class Bank;
 class Benefector;
