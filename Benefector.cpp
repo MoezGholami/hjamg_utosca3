@@ -42,16 +42,13 @@ void Benefector::help(Account* account)
 	if (alreadyDestructed)
 		return;
 	Lock(helpMtx);
-	Lock(account->valMtx);
 	canBeCancelled = false;
 
-	int val = account->IncAndReturn(10);
-	stringstream ss;
-	ss<<"Value of acount "<<account->getName()<<" with ID: "<<account->getID()<<" has become: "<<val;
-	cerr<<ss.str();
+	int val = account->IncAndReturn(0);
+	if(val<1000)
+		account->IncAndReturn(10);
 
 	canBeCancelled = true;
-	UnLock(account->valMtx);
 	UnLock(helpMtx);
 }
 

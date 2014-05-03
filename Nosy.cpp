@@ -51,9 +51,10 @@ void Nosy::nosyWatch(Account* account)
 {
 	if(alreadyDestructed)
 		return ;
-	Lock(watchMtx);
-	canBeCancelled=false;
 	cerr<<"entered nosyWatch()\n";
+	Lock(watchMtx);
+	cerr<<"after lock nosyWatch()\n";
+	canBeCancelled=false;
 	out<<name<<" with id"<<id<<" watched"<< account->getName() << " remaining: "<<account->IncAndReturn(0) <<endl;
 	canBeCancelled=true;
 	UnLock(watchMtx);
@@ -102,7 +103,7 @@ int NosyConstructEx::Code(void) const
 void* RunNosy(void* acptr)
 {
 	Nosy* nosy = (Nosy*) acptr;
-	for (unsigned i = 0 ; !nosy->isCancelling() && i < nosy->watchAccs.size() ; i++ ) //i=(i+1)%nosy->watchAccs.size())
+	for (unsigned i = 0 ; !nosy->isCancelling() ; i=(i+1)%nosy->watchAccs.size())
 		nosy->watchAccs[i]->wait4Watching(nosy);
 	nosy->SetThreadFinished();			
 	return 0;

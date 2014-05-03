@@ -1,6 +1,5 @@
-4:	review cancelling hadis's classes
 5:	edit the makefile
 6:	configure logs
 8:	final test
-9:	solution to critical section for nosy is wrong
-10:	oneAct or wait4charity is not executed
+11:	solve double waiting
+12:	Refactor and remove duplicate code for Nosy & Benefector

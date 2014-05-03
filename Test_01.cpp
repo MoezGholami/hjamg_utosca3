@@ -3,7 +3,7 @@
 #include "Nosy.h"
 #include <iostream>
 #include <vector>
-
+#include <unistd.h>
 using namespace std;
 
 int main()
@@ -17,8 +17,11 @@ int main()
 	NosyGenerator nosies(&bank);
 
 	bank.newAccount("ali","123456");
-	benefectors.generateNewBenefector("billgates",ids);
+//	benefectors.generateNewBenefector("billgates",ids);
 //	benefectors.generateNewBenefector("dianna",ids);
-//	nosies.generateNewNosy("fozul1",ids);
+	nosies.generateNewNosy("fozul1",ids);
 //	nosies.generateNewNosy("fozul2",ids);
+	usleep(1000000);
+	benefectors.Close();
+	nosies.Close();
 }

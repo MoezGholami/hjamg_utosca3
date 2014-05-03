@@ -30,7 +30,6 @@ class Account
 
 		friend class Bank;
 
-		pthread_mutex_t valMtx;
 		void SetThreadFinished(void);
 
 	private:
@@ -53,6 +52,7 @@ class Account
 		pthread_mutex_t watchQmtx;
 		pthread_mutex_t bensQmtx;
 		pthread_mutex_t runningMutex;
+		pthread_mutex_t valMtx;
 
 		pthread_t runningOn;
 		pthread_cond_t wakeupCond;
