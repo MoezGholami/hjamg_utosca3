@@ -24,6 +24,8 @@ Account::Account(const string &name, const string &phoneNumber, int id, pthread_
 	val=0;
 	runningOn=rt;
 	runningMutex=rm;
+	out.open(string(name+".txt").c_str(), ios::out);
+	out<<"log of Qs for "<<name<<"'s account:\n";
 }
 
 Account::~Account(void)
@@ -52,6 +54,18 @@ void Account::cancel(void)
 	pthread_mutex_destroy(&bensQmtx);
 	pthread_mutex_destroy(&valMtx);
 	pthread_mutex_destroy(&runningMutex);
+	out.close();
+}
+
+void Account::printQs(void)
+{
+	out<<"Benefector Q:\t";
+	for(unsigned i=0; i<bens.size(); ++i)
+		out<<bens[i]->getName()<<", ";
+	out<<endl;
+	for(unsigned i=0; i<watchers.size(); ++i)
+		out<<watchers[i]->getName()<<", ";
+	out<<endl;
 }
 
 int Account::getID(void)
@@ -153,6 +167,7 @@ void Account::oneAct(void)
 	{
 		Nosy *n=watchers.front();
 		n->nosyWatch(this);
+		out<<"Picking "<<n->getName()<<"\n\n\n";
 		watchers.pop_front();
 	}
 	else		//access for a benefector
@@ -164,6 +179,7 @@ void Account::oneAct(void)
 			cerr<<"responsing to benefectors\n";
 			Benefector *b=bens.front();
 			b->help(this);
+			out<<"Picking "<<b->getName()<<"\n\n\n";
 			bens.pop_front();
 		}
 	}
@@ -172,7 +188,7 @@ void Account::oneAct(void)
 		UnLock(watchQmtx);
 		UnLock(bensQmtx);
 		canBeCancelled=destructorCalled;
-		cerr<<"SSSleeping thread because Qs are empty\n";
+		cerr<<"Sleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
 	}
 	else

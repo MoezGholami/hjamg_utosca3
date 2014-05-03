@@ -6,6 +6,7 @@
 #include <string>
 #include "Threading.h"
 #include <algorithm>
+#include <fstream>
 using namespace std;
 
 class Bank;
@@ -37,12 +38,15 @@ class Account
 
 	private:
 		Account(const string &, const string &, int, pthread_t, pthread_mutex_t);
+		void printQs(void);	//Should be called if and only if the Qs are locked
 
 		int ID;
 		int val;
 		int qcounter;
 		string Name;
 		string PhoneNumber;
+
+		fstream out;
 
 		bool cancelling;
 		bool canBeCancelled;

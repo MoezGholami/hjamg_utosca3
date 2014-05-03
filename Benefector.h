@@ -21,6 +21,8 @@ class Benefector
 
 		bool isCancelling(void);
 		void SetThreadFinished(void);
+
+		string getName(void);
 		
 	private:
 		Benefector(int, string, Bank*,pthread_t, vector <int>);

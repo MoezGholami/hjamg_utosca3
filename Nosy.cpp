@@ -45,6 +45,11 @@ Nosy::~Nosy()
 	destruct();
 }
 
+string Nosy::getName(void)
+{
+	return name;
+}
+
 bool Nosy::isCancelling(void)
 {
 	return cancelling;

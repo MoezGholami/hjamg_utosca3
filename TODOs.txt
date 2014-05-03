@@ -1,5 +1,3 @@
-5:	edit the makefile
 6:	configure logs
 8:	final test
-11:	solve double waiting
-12:	Refactor and remove duplicate code for Nosy & Benefector
+12__MOSTAHABB__HARAM:	Refactor and remove duplicate code for Nosy & Benefector

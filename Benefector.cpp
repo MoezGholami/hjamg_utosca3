@@ -92,6 +92,11 @@ void BenefectorGenerator::Close(void)
 	alreadyClosed=true;
 }
 
+string Benefector::getName(void)
+{
+	return name;
+}
+
 int BenefectorConstructEx::Code(void) const
 {
 	return 3;	

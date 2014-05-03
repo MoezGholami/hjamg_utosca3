@@ -25,6 +25,8 @@ class Nosy
 		void ClearCanBeCancelled(void);
 		void SetThreadFinished(void);
 
+		string getName(void);
+
 	private:
 		Nosy(int, string, Bank*,pthread_t, const vector <int>&);
 
