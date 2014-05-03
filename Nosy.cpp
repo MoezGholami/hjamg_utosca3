@@ -50,6 +50,11 @@ bool Nosy::isCancelling(void)
 	return cancelling;
 }
 
+void Nosy::ClearCanBeCancelled(void)
+{
+	canBeCancelled=false;
+}
+
 void Nosy::SetThreadFinished(void)
 {
 	finished=true;
@@ -115,7 +120,10 @@ void* RunNosy(void* acptr)
 	{
 		nosy->watchAccs[i]->wakeMeUp();
 		if(!(nosy->watchAccs[i]->isWaitingForWatching(nosy)))
+		{
+			//nosy->ClearCanBeCancelled();
 			nosy->watchAccs[i]->wait4Watching(nosy);
+		}
 	}
 	nosy->SetThreadFinished();			
 	return 0;

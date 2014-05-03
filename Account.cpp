@@ -36,14 +36,14 @@ void Account::cancel(void)
 	if(finished)
 		return ;
 	destructorCalled=true;
-	while(!canBeCancelled)
+	if(!canBeCancelled)
 		usleep(10000);
 	stringstream ss;
 	ss<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
 	cerr<<ss.str();
 	cancelling=true;
 	pthread_cond_broadcast(&wakeupCond);
-	if(!finished)
+	while(!finished)
 		usleep(10000);
 	//pthread_join(runningOn, 0);
 	UnLock(runningMutex);

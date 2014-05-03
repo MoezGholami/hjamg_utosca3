@@ -18,7 +18,7 @@ int main()
 
 	bank.newAccount("ali","123456");
 	benefectors.generateNewBenefector("billgates",ids);
-//	benefectors.generateNewBenefector("dianna",ids);
+	benefectors.generateNewBenefector("dianna",ids);
 	nosies.generateNewNosy("fozul1",ids);
 //	nosies.generateNewNosy("fozul2",ids);
 	usleep(1000000);

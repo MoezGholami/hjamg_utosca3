@@ -22,6 +22,7 @@ class Nosy
 		~Nosy(void);
 
 		bool isCancelling(void);
+		void ClearCanBeCancelled(void);
 		void SetThreadFinished(void);
 
 	private:
