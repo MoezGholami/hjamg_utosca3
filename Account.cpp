@@ -154,7 +154,7 @@ void Account::oneAct(void)
 	printQs();
 	qcounter=(qcounter+1)%6;
 
-	if(qcounter>0 && watchers.size()>0)	//access for a nosy
+	if((qcounter>0 && watchers.size()>0)|| (watchers.size()>0 && bens.size()==0) )	//access for a nosy
 	{
 		Nosy *n=watchers.front();
 		n->nosyWatch(this);
