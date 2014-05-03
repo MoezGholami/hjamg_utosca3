@@ -105,7 +105,7 @@ const char* BenefectorConstructEx::Declaration(void) const
 void* RunBen(void* acptr)
 {
 	Benefector* ben = (Benefector*) acptr;
-	for (unsigned i = 0 ; !ben->isCancelling() && i < ben->helpAccs.size() ; i=(i+1)%ben->helpAccs.size())
+	for (unsigned i = 0 ; !ben->isCancelling() && i < ben->helpAccs.size() ; i=(i+1))//%ben->helpAccs.size())
 		ben->helpAccs[i]->wait4Charity(ben);
 	ben->SetThreadFinished();
 	return 0;	

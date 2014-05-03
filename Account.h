@@ -1,10 +1,11 @@
 #ifndef __Moez_Hadis_Account
 #define __Moez_Hadis_Account
 
-#include <queue>
+#include <deque>
 #include <iostream>
 #include <string>
 #include "Threading.h"
+#include <algorithm>
 using namespace std;
 
 class Bank;
@@ -25,6 +26,8 @@ class Account
 
 		void wait4Charity(Benefector*);
 		void wait4Watching(Nosy*);
+		void wakeMeUp(void);
+		bool isWaitingForWatching(Nosy*);
 
 		int IncAndReturn(int plus);
 
@@ -46,8 +49,8 @@ class Account
 		bool destructorCalled;
 		bool finished;
 
-		queue<Nosy*> watchers;
-		queue<Benefector*> bens;
+		deque<Nosy*> watchers;
+		deque<Benefector*> bens;
 
 		pthread_mutex_t watchQmtx;
 		pthread_mutex_t bensQmtx;

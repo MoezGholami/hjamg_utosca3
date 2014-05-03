@@ -19,17 +19,25 @@ Nosy::Nosy(int i, string n, Bank* b, pthread_t rn, const vector<int> &ids)
 
 void Nosy::destruct(void)
 {
+	cerr<<"NosyDestructorCalled\n";
 	if(alreadyDestructed)
 		return;
 	alreadyDestructed = true;
 	while(!canBeCancelled)
+	{
+		cerr<<"Nosy cannot be destructed\n";
 		usleep(10000);
+	}
 	cancelling=true;
-	if(!finished)
+	while(!finished)
+	{
+		cerr<<"Nosy cannot be finished\n";
 		usleep(10000);
+	}
 	//pthread_join(runningNosy, 0);
 	pthread_mutex_destroy(&watchMtx);
 	out.close();
+	cerr<<"Nosy successfully finished\n";
 }
 
 Nosy::~Nosy()
@@ -104,7 +112,11 @@ void* RunNosy(void* acptr)
 {
 	Nosy* nosy = (Nosy*) acptr;
 	for (unsigned i = 0 ; !nosy->isCancelling() ; i=(i+1)%nosy->watchAccs.size())
-		nosy->watchAccs[i]->wait4Watching(nosy);
+	{
+		nosy->watchAccs[i]->wakeMeUp();
+		if(!(nosy->watchAccs[i]->isWaitingForWatching(nosy)))
+			nosy->watchAccs[i]->wait4Watching(nosy);
+	}
 	nosy->SetThreadFinished();			
 	return 0;
 }

@@ -85,7 +85,7 @@ void Account::wait4Charity(Benefector* christ)
 	canBeCancelled=false;
 
 	Lock(bensQmtx);
-	bens.push(christ);
+	bens.push_back(christ);
 
 	cerr<<"wait4charity has been called and gone inside\n";
 	stringstream ss;
@@ -102,7 +102,8 @@ void Account::wait4Watching(Nosy* n)
 		return ;
 	canBeCancelled=false;
 	Lock(watchQmtx);
-	watchers.push(n);
+	//if(watchers.end()==find(watchers.begin(), watchers.end(), n))
+		watchers.push_back(n);
 
 	stringstream ss;
 	ss<<"in wait4Watching, in nosy's thread: someone is watching me, i am "<<getName()<<endl;
@@ -112,6 +113,19 @@ void Account::wait4Watching(Nosy* n)
 	UnLock(watchQmtx);
 
 	cerr<<"Unlocked watchQMtx\n";
+}
+
+void Account::wakeMeUp(void)
+{
+	pthread_cond_broadcast(&wakeupCond);
+}
+
+bool Account::isWaitingForWatching(Nosy *n)
+{
+	Lock(watchQmtx);
+	bool result=(watchers.end()!=find(watchers.begin(), watchers.end(), n));
+	UnLock(watchQmtx);
+	return result; 
 }
 
 void Account::SetThreadFinished(void)
@@ -135,31 +149,22 @@ void Account::oneAct(void)
 	ss<<"qcounter: "<<qcounter<<endl;
 	cerr<<ss.str();
 
-	if(bens.size()==0 && watchers.size()==0)
-	{
-		UnLock(watchQmtx);
-		UnLock(bensQmtx);
-		canBeCancelled=destructorCalled;
-		cerr<<"sleeping thread because Qs are empty\n";
-		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
-	}
-
 	if(qcounter>0 && watchers.size()>0)	//access for a nosy
 	{
 		Nosy *n=watchers.front();
 		n->nosyWatch(this);
-		watchers.pop();
+		watchers.pop_front();
 	}
 	else		//access for a benefector
 	{
-		if(watchers.size()==0)	//if there is no watcher and you have to serve a benefector, then start again looking for watcers
+		if(watchers.size()==0)	//if there is no watcher and you have to serve a benefector, then start again looking for watchers
 			qcounter=0;
 		if(bens.size()>0)
 		{
 			cerr<<"responsing to benefectors\n";
 			Benefector *b=bens.front();
 			b->help(this);
-			bens.pop();
+			bens.pop_front();
 		}
 	}
 	if(bens.size()==0 && watchers.size()==0)
@@ -167,7 +172,7 @@ void Account::oneAct(void)
 		UnLock(watchQmtx);
 		UnLock(bensQmtx);
 		canBeCancelled=destructorCalled;
-		cerr<<"sleeping thread because Qs are empty\n";
+		cerr<<"SSSleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
 	}
 	else
