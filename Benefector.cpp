@@ -14,6 +14,13 @@ Benefector::Benefector(int i, string n, Bank* b ,pthread_t rn, vector <int> p)
 	cancelling=false;
 	canBeCancelled=false;
 	finished=false;
+
+	stringstream ss;
+	ss<<"Benefector: "<<name<<" with ID: "<<id<<" has been created and helps: ";
+	for (unsigned i = 0 ; i < helpAccs.size() ; i++)
+		ss<<helpAccs[i]->getName()<<" ";
+	ss<<endl;
+	cout<<ss.str();
 }
 
 Benefector::~Benefector(void)
@@ -31,9 +38,7 @@ void Benefector::destruct(void)
 	cancelling=true;
 	if(!finished)
 		usleep(10000);
-	//pthread_join(runningNosy, 0);
 	
-	//remainder
 	pthread_mutex_destroy(&helpMtx);
 }
 
@@ -45,8 +50,18 @@ void Benefector::help(Account* account)
 	canBeCancelled = false;
 
 	int val = account->IncAndReturn(0);
+
+	stringstream ss;
+
 	if(val<1000)
-		account->IncAndReturn(10);
+	{
+		val = account->IncAndReturn(10);
+		ss<<"Benefector with name: "<<name<<" with ID: "<<id<<" helped "<<account->getName()<<" with ID: "<<account->getID()<<" and final value is: "<<val<<endl;
+	}
+	else
+		ss<<"Benefector with name: "<<name<<" with ID: "<<id<<" did not help "<<account->getName()<<" with ID: "<<account->getID()<<" bacause value is more than 1000 and final value is: "<<val<<endl;
+
+	cout<<ss.str();	
 
 	canBeCancelled = true;
 	UnLock(helpMtx);

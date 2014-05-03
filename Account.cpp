@@ -26,6 +26,10 @@ Account::Account(const string &name, const string &phoneNumber, int id, pthread_
 	runningMutex=rm;
 	out.open(string(name+".txt").c_str(), ios::out);
 	out<<"log of Qs for "<<name<<"'s account:\n";
+
+	stringstream ss;
+	ss<<"Acount: "<<Name<<" with ID: "<<ID<<" has been created.\n";
+	cout<<ss.str();
 }
 
 Account::~Account(void)
@@ -40,29 +44,28 @@ void Account::cancel(void)
 	destructorCalled=true;
 	if(!canBeCancelled)
 		usleep(10000);
-	stringstream ss;
-	ss<<"Account with ID "<< ID << " for "<<Name<<" has been closed."<<endl;
-	cerr<<ss.str();
 	cancelling=true;
 	pthread_cond_broadcast(&wakeupCond);
 	while(!finished)
 		usleep(10000);
-	//pthread_join(runningOn, 0);
 	UnLock(runningMutex);
 	pthread_cond_destroy(&wakeupCond);
 	pthread_mutex_destroy(&watchQmtx);
 	pthread_mutex_destroy(&bensQmtx);
 	pthread_mutex_destroy(&valMtx);
 	pthread_mutex_destroy(&runningMutex);
-	out.close();
+
+	stringstream ss;
+	ss<<"Acount: "<<Name<<" with ID: "<<ID<<" is exiting.\n";
+	cout<<ss.str();
 }
 
 void Account::printQs(void)
 {
-	out<<"Benefector Q:\t";
+	out<<"\n\n\nBenefector Q:\t";
 	for(unsigned i=0; i<bens.size(); ++i)
 		out<<bens[i]->getName()<<", ";
-	out<<endl;
+	out<<"\nWatchers Q:\t";
 	for(unsigned i=0; i<watchers.size(); ++i)
 		out<<watchers[i]->getName()<<", ";
 	out<<endl;
@@ -88,6 +91,14 @@ int Account::IncAndReturn(int plus)
 	Lock(valMtx);
 	val+=plus;
 	int v=val;
+
+	stringstream ss;
+	if (plus == 0)
+		ss<<"The value of "<<Name<<" has not been changed and it is: "<<v<<endl;
+	else
+		ss<<"The value of "<<Name<<" has been changed and it is: "<<v<<endl;
+	cout<<ss.str();
+	
 	UnLock(valMtx);
 	return v;
 }
@@ -101,11 +112,6 @@ void Account::wait4Charity(Benefector* christ)
 	Lock(bensQmtx);
 	bens.push_back(christ);
 
-	cerr<<"wait4charity has been called and gone inside\n";
-	stringstream ss;
-	ss<<"in wait4charity, in benefector's thread: someone is trying to help me, i am "<<getName()<<endl;
-	cerr<<ss.str();
-
 	pthread_cond_broadcast(&wakeupCond);
 	UnLock(bensQmtx);
 }
@@ -116,17 +122,10 @@ void Account::wait4Watching(Nosy* n)
 		return ;
 	canBeCancelled=false;
 	Lock(watchQmtx);
-	//if(watchers.end()==find(watchers.begin(), watchers.end(), n))
-		watchers.push_back(n);
-
-	stringstream ss;
-	ss<<"in wait4Watching, in nosy's thread: someone is watching me, i am "<<getName()<<endl;
-	cerr<<ss.str();
+	watchers.push_back(n);
 
 	pthread_cond_broadcast(&wakeupCond);
 	UnLock(watchQmtx);
-
-	cerr<<"Unlocked watchQMtx\n";
 }
 
 void Account::wakeMeUp(void)
@@ -152,22 +151,14 @@ void Account::oneAct(void)
 	Lock(watchQmtx);
 	Lock(bensQmtx);
 
-	stringstream ss;
-	ss<<"oneAct() has been executed.\n";
-	ss<<"benQsize = "<<bens.size()<<endl;
-	ss<<"watchQsize = "<<watchers.size()<<endl;
-	cerr<<ss.str();
-
+	printQs();
 	qcounter=(qcounter+1)%6;
-
-	ss<<"qcounter: "<<qcounter<<endl;
-	cerr<<ss.str();
 
 	if(qcounter>0 && watchers.size()>0)	//access for a nosy
 	{
 		Nosy *n=watchers.front();
 		n->nosyWatch(this);
-		out<<"Picking "<<n->getName()<<"\n\n\n";
+		out<<"Picking "<<n->getName()<<"\n";
 		watchers.pop_front();
 	}
 	else		//access for a benefector
@@ -176,10 +167,9 @@ void Account::oneAct(void)
 			qcounter=0;
 		if(bens.size()>0)
 		{
-			cerr<<"responsing to benefectors\n";
 			Benefector *b=bens.front();
 			b->help(this);
-			out<<"Picking "<<b->getName()<<"\n\n\n";
+			out<<"Picking "<<b->getName()<<"\n";
 			bens.pop_front();
 		}
 	}
@@ -188,7 +178,6 @@ void Account::oneAct(void)
 		UnLock(watchQmtx);
 		UnLock(bensQmtx);
 		canBeCancelled=destructorCalled;
-		cerr<<"Sleeping thread because Qs are empty\n";
 		while(pthread_cond_wait(&wakeupCond,&runningMutex)); //Block
 	}
 	else
@@ -200,20 +189,13 @@ void Account::oneAct(void)
 
 void *RunAnAccount(void* acptr)
 {
-	cerr<<"RunAnAccount() has been executed.\n";
 	Account *inUse=(Account *)acptr;
-
-	stringstream ss;
-	ss<<"is cancelling "<<inUse->isCancelling()<<endl;
-	cerr<<ss.str();
 
 	while(!inUse->isCancelling())
 	{
-		cerr<<"entering one act\n";
 		Account *inUse=(Account *)acptr;
 		inUse->oneAct();
 	}
-	cerr<<"has been joined"<<endl;
 	inUse->SetThreadFinished();
 	return 0;
 }

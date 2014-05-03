@@ -1,6 +1,8 @@
 #include "Nosy.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 Nosy::Nosy(int i, string n, Bank* b, pthread_t rn, const vector<int> &ids)
 {
@@ -15,29 +17,31 @@ Nosy::Nosy(int i, string n, Bank* b, pthread_t rn, const vector<int> &ids)
 	cancelling=false;
 	canBeCancelled=false;
 	finished=false;
+	
+	stringstream ss;
+	ss<<"Nosy: "<<name<<" with ID: "<<id<<" has been created and watches: ";
+	for (unsigned i = 0 ; i < watchAccs.size() ; i++)
+		ss<<watchAccs[i]->getName()<<" ";
+	ss<<endl;
+	cout<<ss.str();
 }
 
 void Nosy::destruct(void)
 {
-	cerr<<"NosyDestructorCalled\n";
 	if(alreadyDestructed)
 		return;
 	alreadyDestructed = true;
 	while(!canBeCancelled)
 	{
-		cerr<<"Nosy cannot be destructed\n";
 		usleep(10000);
 	}
 	cancelling=true;
 	while(!finished)
 	{
-		cerr<<"Nosy cannot be finished\n";
 		usleep(10000);
 	}
-	//pthread_join(runningNosy, 0);
 	pthread_mutex_destroy(&watchMtx);
 	out.close();
-	cerr<<"Nosy successfully finished\n";
 }
 
 Nosy::~Nosy()
@@ -69,11 +73,14 @@ void Nosy::nosyWatch(Account* account)
 {
 	if(alreadyDestructed)
 		return ;
-	cerr<<"entered nosyWatch()\n";
 	Lock(watchMtx);
-	cerr<<"after lock nosyWatch()\n";
 	canBeCancelled=false;
-	out<<name<<" with id"<<id<<" watched"<< account->getName() << " remaining: "<<account->IncAndReturn(0) <<endl;
+	out<<name<<" with ID: "<<account->getID()<<" watched"<< account->getName() << " remaining: "<<account->IncAndReturn(0) <<endl;
+
+	stringstream ss;
+	ss<<"Nosy: "<<name<<" with ID: "<<id<<"has watched "<<account->getName()<<" with ID: "<<account->getID()<<endl;
+	cout<<ss.str();
+
 	canBeCancelled=true;
 	UnLock(watchMtx);
 }
@@ -126,7 +133,6 @@ void* RunNosy(void* acptr)
 		nosy->watchAccs[i]->wakeMeUp();
 		if(!(nosy->watchAccs[i]->isWaitingForWatching(nosy)))
 		{
-			//nosy->ClearCanBeCancelled();
 			nosy->watchAccs[i]->wait4Watching(nosy);
 		}
 	}

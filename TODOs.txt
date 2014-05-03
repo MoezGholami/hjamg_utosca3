@@ -1,3 +1,0 @@
-6:	configure logs
-8:	final test
-12__MOSTAHABB__HARAM:	Refactor and remove duplicate code for Nosy & Benefector
